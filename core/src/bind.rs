@@ -4,9 +4,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 
-use crate::{
-    AsyncResolve, AsyncResolver, AsyncServices, Resolve, Resolver, ServiceContainer, Services,
-};
+use crate::{AsyncResolve, AsyncResolver, AsyncServices, Resolve, ServiceContainer, Services};
 
 pub struct Bound<Interface>
 where
@@ -100,7 +98,7 @@ pub trait BindServices: Services {
     where
         Interface: ?Sized + Send + Sync + 'static,
     {
-        self.put(Resolver::new(Bound::from(service)));
+        self.put(Bound::from(service));
     }
 
     fn bind_by<Interface, F>(&mut self, f: F)
@@ -109,7 +107,7 @@ pub trait BindServices: Services {
         F: (Fn(&Self) -> Option<Arc<Interface>>) + Send + Sync + 'static,
         Self: 'static,
     {
-        self.put(Resolver::new(BindBy::from(f)))
+        self.put(BindBy::from(f))
     }
 }
 

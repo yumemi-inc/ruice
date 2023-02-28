@@ -41,7 +41,7 @@ where
     fn resolve(&self, container: &C) -> Option<Arc<S>>;
 }
 
-pub struct Resolver<S, C = ServiceContainer>
+struct Resolver<S, C = ServiceContainer>
 where
     S: ?Sized,
 {
@@ -52,7 +52,7 @@ impl<S, C> Resolver<S, C>
 where
     S: ?Sized,
 {
-    pub fn new<R>(resolve: R) -> Self
+    fn new<R>(resolve: R) -> Self
     where
         R: Resolve<S, C> + 'static,
     {
@@ -61,7 +61,7 @@ where
         }
     }
 
-    pub fn as_inner(&self) -> &dyn Resolve<S, C> {
+    fn as_inner(&self) -> &dyn Resolve<S, C> {
         self.resolve.as_ref()
     }
 }
@@ -104,16 +104,17 @@ pub trait Services: Sized + Send + Sync {
     where
         S: ?Sized + Send + Sync + 'static;
 
-    fn put<S>(&mut self, resolver: Resolver<S, Self>)
+    fn put<S, R>(&mut self, resolver: R)
     where
-        S: ?Sized + Send + Sync + 'static;
+        S: ?Sized + Send + Sync + 'static,
+        R: Resolve<S, Self> + 'static;
 
     fn replace<S, F>(&mut self, f: F)
     where
         S: Send + Sync + 'static,
         F: FnOnce(Option<&S>) -> S,
     {
-        self.put(Resolver::new(Singleton::new(f(self.get::<S>().as_deref()))));
+        self.put(Singleton::new(f(self.get::<S>().as_deref())));
     }
 }
 
@@ -146,11 +147,13 @@ impl Services for ServiceContainer {
             .and_then(|r| r.as_inner().resolve(self))
     }
 
-    fn put<S>(&mut self, resolver: Resolver<S>)
+    fn put<S, R>(&mut self, resolver: R)
     where
         S: ?Sized + Send + Sync + 'static,
+        R: Resolve<S, Self> + 'static,
     {
-        self.services.insert(TypeId::of::<S>(), Arc::new(resolver));
+        self.services
+            .insert(TypeId::of::<S>(), Arc::new(Resolver::new(resolver)));
     }
 }
 

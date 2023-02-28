@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::{Resolve, Resolver, ServiceContainer, Services};
+use crate::{Resolve, ServiceContainer, Services};
 
 pub trait Construct<S = Self, C = ServiceContainer>: Send + Sync {
     fn construct(container: &C) -> Option<S>;
@@ -39,7 +39,7 @@ pub trait ConstructServices: Services {
     where
         S: Construct<S, Self> + 'static,
     {
-        self.put(Resolver::<S, Self>::new(Constructor::<S>::new()));
+        self.put(Constructor::<S>::new());
     }
 }
 
