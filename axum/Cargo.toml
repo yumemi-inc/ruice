@@ -1,0 +1,18 @@
+[package]
+name = "ruice-axum"
+description = "Injects services in a ruice container into axum controllers."
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.67.1"
+license = "MIT"
+repository = "https://github.com/yumemi-inc/ruice.git"
+authors = [
+    "Naoki Ikeguchi <n_ikeguchi@yumemi.co.jp>",
+]
+
+[dependencies]
+ruice = { path = "../core", version = "=0.1.0" }
+
+async-trait = "0.1.64"
+axum = "0.6.8"
+thiserror = "1.0"

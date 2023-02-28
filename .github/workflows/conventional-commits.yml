@@ -1,0 +1,16 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dkhunt27/action-conventional-commits@6f66c5039b1b34f03c24af2e3d77e424ba1eed48
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

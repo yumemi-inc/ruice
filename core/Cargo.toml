@@ -1,0 +1,17 @@
+[package]
+name = "ruice"
+description = "Runtime based dependency injection for Rust."
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.67.1"
+license = "MIT"
+repository = "https://github.com/yumemi-inc/ruice.git"
+authors = [
+    "Naoki Ikeguchi <n_ikeguchi@yumemi.co.jp>",
+]
+
+[dependencies]
+async-trait = "0.1.64"
+
+[dev-dependencies]
+tokio = { version = "1.25", features = ["macros", "rt"] }
