@@ -69,8 +69,16 @@ jobs:
           command: login
           args: ${{ secrets.CRATES_IO_TOKEN }}
 
-      - name: Publish to crates.io
+      - name: Publish to crates.io (ruice)
         uses: ructions/cargo@v1
         with:
           command: publish
-          args: --allow-dirty
+          args: --allow-dirty -p ruice
+
+      - name: Publish to crates.io (ruice-axum)
+        run: |
+          until cargo publish --allow-dirty -p ruice-axum
+          do
+            echo "Still waiting..."
+            sleep 5
+          done
