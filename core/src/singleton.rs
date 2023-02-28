@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{Resolve, Resolver, Services};
+use crate::{Resolve, Services};
 
 pub struct Singleton<S> {
     service: Arc<S>,
@@ -28,7 +28,7 @@ pub trait SingletonServices: Services {
     where
         S: Send + Sync + 'static,
     {
-        self.put(Resolver::new(Singleton::new(service)));
+        self.put(Singleton::new(service));
     }
 }
 
