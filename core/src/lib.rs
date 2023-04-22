@@ -189,6 +189,6 @@ impl AsyncServices for ServiceContainer {
 #[macro_export]
 macro_rules! alias {
     ($int: ty, $act: ty $(,)?) => {
-        |c| c.get::<$act>().map(|s| s as Arc<$int>)
+        |c| c.get::<$act>().map(|s| s as ::std::sync::Arc<$int>)
     };
 }
