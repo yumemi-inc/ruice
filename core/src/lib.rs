@@ -211,3 +211,31 @@ macro_rules! alias {
         |c| c.get::<$act>().map(|s| s as ::std::sync::Arc<$int>)
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{ServiceContainer, Services, Singleton};
+
+    struct Greeter {
+        message: String,
+    }
+
+    impl Greeter {
+        fn greet(&self) -> String {
+            self.message.clone()
+        }
+    }
+
+    #[test]
+    fn service_get_put() {
+        let mut container = ServiceContainer::default();
+
+        container.put(Singleton::new(Greeter {
+            message: "Hello, world!".to_string(),
+        }));
+
+        assert!(container.has::<Greeter>());
+
+        assert_eq!("Hello, world!", container.get::<Greeter>().unwrap().greet());
+    }
+}
