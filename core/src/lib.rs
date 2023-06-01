@@ -100,15 +100,25 @@ where
 }
 
 pub trait Services: Sized + Send + Sync {
+    /// Returns whether the service container has the specified service or not.
+    fn has<S>(&self) -> bool
+    where
+        S: ?Sized + 'static;
+
+    /// Gets the service from the service container.
+    /// Asynchronous services can not be retrieved using this method.
+    /// Use [`AsyncServices::get`] for resolving a service asynchronously.
     fn get<S>(&self) -> Option<Arc<S>>
     where
         S: ?Sized + Send + Sync + 'static;
 
+    /// Puts a service to the service container.
     fn put<S, R>(&mut self, resolver: R)
     where
         S: ?Sized + Send + Sync + 'static,
         R: Resolve<S, Self> + 'static;
 
+    /// Replaces the service in the container by the mutation function.
     fn replace<S, F>(&mut self, f: F)
     where
         S: Send + Sync + 'static,
@@ -120,10 +130,12 @@ pub trait Services: Sized + Send + Sync {
 
 #[async_trait]
 pub trait AsyncServices: Sized + Send + Sync {
+    /// Gets the service asynchronously from the service container.
     async fn get_async<S>(&self) -> Option<Arc<S>>
     where
         S: ?Sized + Send + Sync + 'static;
 
+    /// Puts a asynchronous service to the service container.
     fn put_async<S>(&mut self, resolver: AsyncResolver<S, Self>)
     where
         S: ?Sized + Send + Sync + 'static;
@@ -137,6 +149,13 @@ pub struct ServiceContainer {
 }
 
 impl Services for ServiceContainer {
+    fn has<S>(&self) -> bool
+    where
+        S: ?Sized + 'static,
+    {
+        self.services.contains_key(&TypeId::of::<S>())
+    }
+
     fn get<S>(&self) -> Option<Arc<S>>
     where
         S: ?Sized + Send + Sync + 'static,
