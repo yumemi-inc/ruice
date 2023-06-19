@@ -1,7 +1,8 @@
+use async_trait::async_trait;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::{Resolve, ServiceContainer, Services};
+use crate::{AsyncResolve, AsyncResolver, AsyncServices, Resolve, ServiceContainer, Services};
 
 pub trait Construct<S = Self, C = ServiceContainer>: Send + Sync {
     fn construct(container: &C) -> Option<S>;
@@ -34,6 +35,40 @@ where
     }
 }
 
+#[async_trait]
+pub trait AsyncConstruct<S = Self, C = ServiceContainer>: Send + Sync {
+    async fn construct_async(container: &C) -> Option<S>;
+}
+
+pub struct AsyncConstructor<S> {
+    _phantom: PhantomData<fn() -> S>,
+}
+
+impl<S> AsyncConstructor<S> {
+    pub fn new() -> Self {
+        Self {
+            _phantom: PhantomData,
+        }
+    }
+}
+
+impl<S> Default for AsyncConstructor<S> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[async_trait]
+impl<S, C> AsyncResolve<S, C> for AsyncConstructor<S>
+where
+    S: AsyncConstruct<S, C>,
+    C: Sync,
+{
+    async fn async_resolve(&self, container: &C) -> Option<Arc<S>> {
+        Some(Arc::new(S::construct_async(container).await?))
+    }
+}
+
 pub trait ConstructServices: Services {
     fn construct<S>(&mut self)
     where
@@ -44,6 +79,19 @@ pub trait ConstructServices: Services {
 }
 
 impl<C> ConstructServices for C where C: Services {}
+
+#[async_trait]
+pub trait AsyncConstructServices: AsyncServices {
+    async fn construct_async<S>(&mut self)
+    where
+        S: AsyncConstruct<S, Self> + 'static,
+    {
+        self.put_async(AsyncResolver::new(AsyncConstructor::<S>::new()));
+    }
+}
+
+#[async_trait]
+impl<C> AsyncConstructServices for C where C: AsyncServices {}
 
 #[cfg(test)]
 mod tests {

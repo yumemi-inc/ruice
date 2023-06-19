@@ -160,6 +160,7 @@ impl Services for ServiceContainer {
     where
         S: ?Sized + Send + Sync + 'static,
     {
+        println!("get: {:?}", std::any::TypeId::of::<S>());
         self.services
             .get(&TypeId::of::<S>())
             .and_then(|r| r.downcast_ref::<Resolver<S>>())
@@ -182,6 +183,7 @@ impl AsyncServices for ServiceContainer {
     where
         S: ?Sized + Send + Sync + 'static,
     {
+        println!("get_sync: {:?}", std::any::TypeId::of::<S>());
         let resolved = match self
             .services
             .get(&TypeId::of::<S>())
