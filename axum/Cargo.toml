@@ -1,7 +1,7 @@
 [package]
 name = "ruice-axum"
 description = "Injects services in a ruice container into axum controllers."
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.67.1"
 license = "MIT"
@@ -12,8 +12,8 @@ authors = [
 ]
 
 [dependencies]
-ruice = { path = "../core", version = "=0.1.2" }
+ruice = { path = "../core", version = "=0.2.0" }
 
 async-trait = "0.1.74"
-axum = "0.6.20"
+axum = "0.7.1"
 thiserror = "1.0"
