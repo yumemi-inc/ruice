@@ -15,5 +15,5 @@ authors = [
 ruice = { path = "../core", version = "=0.2.0" }
 
 async-trait = "0.1.74"
-axum = "0.7.1"
+axum = "0.7.2"
 thiserror = "1.0"
