@@ -23,29 +23,22 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install latest stable
-        uses: ructions/toolchain@v2
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
           components: rustfmt,clippy
 
-      - name: Run clippy
-        uses: ructions/clippy-check@v1
-        with:
-          token: ${{ github.token }}
-          args: --all-features
-
       - name: Run rustfmt
-        uses: ructions/cargo@v1
+        run: cargo fmt --all --check
+
+      - name: Run clippy
+        uses: giraffate/clippy-action@v1
         with:
-          command: fmt
-          args: --all --check
+          github_token: ${{ github.token }}
+          clippy_flags: --all-features
+          reporter: github-pr-check
 
       - name: Run tests
-        uses: ructions/cargo@v1
-        with:
-          command: test
-          args: --all-features
+        run: cargo test --all-features
 
   deploy:
     runs-on: ubuntu-22.04
@@ -58,22 +51,13 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install latest stable
-        uses: ructions/toolchain@v2
-        with:
-          toolchain: stable
-          override: true
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Log into crates.io
-        uses: ructions/cargo@v1
-        with:
-          command: login
-          args: ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
 
       - name: Publish to crates.io (ruice)
-        uses: ructions/cargo@v1
-        with:
-          command: publish
-          args: --allow-dirty -p ruice
+        run: cargo publish --allow-dirty -p ruice
 
       - name: Publish to crates.io (ruice-axum)
         run: |
