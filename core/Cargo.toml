@@ -12,7 +12,7 @@ authors = [
 ]
 
 [dependencies]
-async-trait = "0.1.79"
+async-trait = "0.1.80"
 
 [dev-dependencies]
 tokio = { version = "1.37", features = ["macros", "rt"] }
