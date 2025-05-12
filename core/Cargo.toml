@@ -15,4 +15,4 @@ authors = [
 async-trait = "0.1.88"
 
 [dev-dependencies]
-tokio = { version = "1.44", features = ["macros", "rt"] }
+tokio = { version = "1.45", features = ["macros", "rt"] }
