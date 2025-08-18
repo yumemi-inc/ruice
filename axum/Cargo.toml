@@ -14,6 +14,6 @@ authors = [
 [dependencies]
 ruice = { path = "../core", version = "=0.2.0" }
 
-async-trait = "0.1.88"
+async-trait = "0.1.89"
 axum = "0.7.9"
 thiserror = "2.0"
